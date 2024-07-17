@@ -1,0 +1,135 @@
+databaseChangeLog:
+  - logicalFilePath: db/changelog/db.changelog-master.yaml
+  - changeSet:
+      id: 1721071380782-3
+      author: bank
+      changes:
+        - createTable:
+            tableName: dictionary
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    unique: true
+                    nullable: false
+              - column:
+                  name: code
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: varchar(50)
+                  constraints:
+                    nullable: true
+        - addPrimaryKey:
+            clustered: true
+            columnNames: id
+            constraintName: dictionary_pkey
+            tableName: dictionary
+            validate: true
+        - createTable:
+            tableName: data
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    unique: true
+                    nullable: false
+              - column:
+                  name: dictionary_id
+                  type: uuid
+                  constraints:
+                    unique: true
+                    nullable: false
+              - column:
+                  name: code
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: value
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+        - addPrimaryKey:
+            clustered: true
+            columnNames: id
+            constraintName: data_pkey
+            tableName: data
+            validate: true
+        - addForeignKeyConstraint:
+            baseColumnNames: dictionary_id
+            baseTableName: data
+            constraintName: data_dictionary_id_fkey
+            deferrable: false
+            initiallyDeferred: false
+            referencedColumnNames: id
+            referencedTableName: dictionary
+            onDelete: CASCADE
+            onUpdate: CASCADE
+            validate: true
+  - changeSet:
+      id: 1721071380782-7
+      author: bank
+      comment: "Create new dictionary"
+      changes:
+        - insert:
+            tableName: dictionary
+            columns:
+              - column:
+                  name: code
+                  value: "Dictionary 1"
+              - column:
+                  name: description
+                  value: "First dictionary"
+  - changeSet:
+      id: 1721071380782-9
+      author: bank
+      comment: "Create new dictionary"
+      changes:
+        - insert:
+            tableName: dictionary
+            columns:
+              - column:
+                  name: code
+                  value: "Dictionary 2"
+              - column:
+                  name: description
+                  value: "Second dictionary"
+  - changeSet:
+      id: 1721071380782-11
+      author: bank
+      comment: "Create a new insurance company in Dictionary 1"
+      changes:
+        - insert:
+            tableName: data
+            columns:
+              - column:
+                  name: dictionary_id
+                  valueComputed: "(SELECT id FROM dictionary WHERE code = 'Dictionary 1')"
+              - column:
+                  name: code
+                  value: "COMPANY"
+              - column:
+                  name: value
+                  value: "Insurance company"
+  - changeSet:
+      id: 1721071380782-13
+      author: bank
+      comment: "Create a new point of sale in Dictionary 1"
+      changes:
+        - insert:
+            tableName: data
+            columns:
+              - column:
+                  name: dictionary_id
+                  valueComputed: "(SELECT id FROM dictionary WHERE code = 'Dictionary 1')"
+              - column:
+                  name: code
+                  value: "SALE_POINT"
+              - column:
+                  name: value
+                  value: "Point of sale"
